@@ -19,6 +19,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <p>
         <?= Html::a('Create Picture', ['create'], ['class' => 'btn btn-success']) ?>
     </p>
+	<?php yii\widgets\Pjax::begin(['id' => 'demo']); ?>
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
@@ -53,8 +54,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'buttons' => [
                 'rotate' => function ($url,$model) {
                     return Html::a(
-                    'rotate', 
-                    $url);
+                    'rotate', $url, ['data-pjax'=>'w0']);
                 },
                
             ],
@@ -64,4 +64,5 @@ $this->params['breadcrumbs'][] = $this->title;
            
         ],
     ]); ?>
+	<?php yii\widgets\Pjax::end(); ?>
 </div>

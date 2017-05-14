@@ -134,14 +134,16 @@ class PictureController extends Controller
 		 $oldImageName = $model->image_link;
 		
         if ($model->load(Yii::$app->request->post()) ) {
+			$model->user_id = Yii::$app->user->identity->id;	
 			$model->uploadedImage = UploadedFile::getInstance($model, 'uploadedImage');
             $newImg = $model->savePicture($oldImageName,$model);
-                        
+                	        
             if($newImg)
             {
                 $model->image_link = $newImg;
+				
             }
-			$model->save();
+			$model->save(false);
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
@@ -181,7 +183,7 @@ class PictureController extends Controller
         return $this->redirect(['index']);
     }
 
-	 public function actionRotate($id)
+	 public function actionRotate($id,$action=false)
     {
 		if (!Yii::$app->user->can('picture')) {
 			   throw new ForbiddenHttpException('You do not have permission to manage pictures! Please, register first.');
@@ -209,20 +211,30 @@ class PictureController extends Controller
 		 $searchModel = new PictureSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 		$model = Picture::find()->all();
-
-        return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
-            'model' => $model,
-        ]);
-		
-		
-/*
-        return $this->redirect(['create', 
+		 
+	
+		if($action=="create"){
+			return $this->redirect(['create', 
 				'model' => $model,
 				'pictures' => $pictures,
 				]);
-				*/
+		}
+		else if($action=="update"){
+			$model = $this->findModel($id);
+			
+				 return $this->redirect(['update', 'id' => $model->id, 
+				 'model' => $model,
+				'pictures' => $pictures,]);
+		}
+	
+			 return $this->redirect(['index', 
+					'searchModel' => $searchModel,
+					'dataProvider' => $dataProvider,
+					'model' => $model,
+				]);
+		 
+		
+			
     }
 	
 	

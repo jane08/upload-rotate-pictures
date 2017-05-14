@@ -96,12 +96,16 @@ class Picture extends \yii\db\ActiveRecord
 			
 			$filepath = 'uploads/'.$model->user_id.'/'. $newFileName;
 			
+			
+			
             // saving original photo to server folder
             if($this->uploadedImage->saveAs($filepath)) {
-                  
+                 
 				 if($oldImageName)
                 {
-                    static::deleteImage($oldImageName);            
+					
+                    static::deleteImage($oldImageName);  
+									
                 }   
 				  
 				$basepath =  \Yii::$app->basePath .'/web/';

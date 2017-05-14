@@ -7,6 +7,12 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model common\models\Picture */
 /* @var $form yii\widgets\ActiveForm */
+if($model->isNewRecord){
+	$action="create";
+}
+else{
+	$action="update";
+}
 ?>
 
 <div class="picture-form">
@@ -31,7 +37,7 @@ use yii\widgets\ActiveForm;
 			<?php if ($picture->user_id == Yii::$app->user->identity->id): ?>
 		  <tr>
 			<td><?php echo Html::img('@web/'.$picture->image_link, ["alt"=>"pic"]) ?></td>
-			<td> <?= Html::a('Rotate', ['rotate', 'id' => $picture->id], ['class' => 'btn btn-primary']) ?></td>
+			<td> <?= Html::a('Rotate', ['rotate', 'id' => $picture->id , 'action'=>$action], ['class' => 'btn btn-primary']) ?></td>
 			<td> 
 				<?= Html::a('Delete', ['delete', 'id' => $picture->id], [
 				'class' => 'btn btn-danger',
