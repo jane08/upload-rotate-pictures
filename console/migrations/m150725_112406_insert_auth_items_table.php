@@ -22,21 +22,13 @@ class m150725_112406_insert_auth_items_table extends Migration
                    'type' => '2',
 				   'description' => 'picture.update',
 		]);
-		$this->insert('auth_item', [
-                   'name' => 'picture.update.own ',
-                   'type' => '2',
-				   'description' => 'picture.update.own ',
-		]);
+		
 		$this->insert('auth_item', [
                    'name' => 'picture.delete',
                    'type' => '2',
 				   'description' => 'picture.delete',
 		]);
-		$this->insert('auth_item', [
-                   'name' => 'picture.delete.own',
-                   'type' => '2',
-				   'description' => 'picture.delete.own',
-		]);
+		
 		
 		$this->insert('auth_item', [
                    'name' => 'picture.view',
@@ -44,11 +36,7 @@ class m150725_112406_insert_auth_items_table extends Migration
 				   'description' => 'picture.view',
 		]);
 		
-		$this->insert('auth_item', [
-                   'name' => 'picture.view.own',
-                   'type' => '2',
-				   'description' => 'picture.view.own',
-		]);
+		
 		
 		
 		

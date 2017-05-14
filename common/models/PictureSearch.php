@@ -41,8 +41,12 @@ class PictureSearch extends Picture
      */
     public function search($params)
     {
-        $query = Picture::find();
-
+       // $query = Picture::find();
+	   if (!Yii::$app->user->can('picture')) {
+			   throw new ForbiddenHttpException('You do not have permission to manage pictures! Please, register first.');
+		   }
+		   
+		$query = Picture::find()->where(['user_id' => Yii::$app->user->identity->id]);
         // add conditions that should always apply here
 
         $dataProvider = new ActiveDataProvider([

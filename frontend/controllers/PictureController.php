@@ -10,6 +10,8 @@ use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use common\helpers\ConvertDate;
 use yii\web\ForbiddenHttpException;
+use yii\web\UploadedFile;
+use yii\imagine\Image;
 
 /**
  * PictureController implements the CRUD actions for Picture model.
@@ -39,10 +41,12 @@ class PictureController extends Controller
     {
         $searchModel = new PictureSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		$model = Picture::find()->all();
 
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'model' => $model,
         ]);
     }
 
@@ -78,6 +82,7 @@ class PictureController extends Controller
 			   throw new ForbiddenHttpException('You do not have permission to manage pictures! Please, register first.');
 		   }
         $model = new Picture();
+		$pictures = Picture::find()->all();
 
         if ($model->load(Yii::$app->request->post()) ) {
 			 if (!Yii::$app->user->can('picture')) {
@@ -85,6 +90,20 @@ class PictureController extends Controller
 		   }
 		   else{
 				$model->user_id = Yii::$app->user->identity->id;	
+				
+				 // set file object to attribute uploadedImage
+				 $model->uploadedImage = UploadedFile::getInstance($model, 'uploadedImage');
+				 $newImg = $model->savePicture(false, $model);
+				 
+				  if($newImg)
+					{
+						$model->image_link = $newImg;
+					}
+				else
+					{
+						$model->image_link = NULL;
+					}
+				
 				$model->save();
 			}
 			
@@ -92,6 +111,7 @@ class PictureController extends Controller
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'pictures' => $pictures,
             ]);
         }
     }
@@ -106,16 +126,27 @@ class PictureController extends Controller
     {
 		
         $model = $this->findModel($id);
-
+		$pictures = Picture::find()->all();
 		 if (! \Yii::$app->user->can('picture.update.own', ['post' => $model])) {
 			   throw new ForbiddenHttpException('You do not own this picture!');
 		   }
 		
-        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+		 $oldImageName = $model->image_link;
+		
+        if ($model->load(Yii::$app->request->post()) ) {
+			$model->uploadedImage = UploadedFile::getInstance($model, 'uploadedImage');
+            $newImg = $model->savePicture($oldImageName,$model);
+                        
+            if($newImg)
+            {
+                $model->image_link = $newImg;
+            }
+			$model->save();
             return $this->redirect(['view', 'id' => $model->id]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+				'pictures' => $pictures,
             ]);
         }
     }
@@ -133,16 +164,68 @@ class PictureController extends Controller
 		   }
 		   
 		 $model = $this->findModel($id);
+		 
+		 
        
 		 if (! \Yii::$app->user->can('picture.delete.own', ['post' => $model])) {
 			   throw new ForbiddenHttpException('You do not own this picture!');
 		   }
+		   
+		   if (file_exists((\Yii::$app->basePath).'/web/'.$model->image_link)) {
+					unlink((\Yii::$app->basePath).'/web/'.$model->image_link);
+					
+			}
 		    
 		$model->delete();
 
         return $this->redirect(['index']);
     }
 
+	 public function actionRotate($id)
+    {
+		if (!Yii::$app->user->can('picture')) {
+			   throw new ForbiddenHttpException('You do not have permission to manage pictures! Please, register first.');
+		   }
+		   
+		 $model = $this->findModel($id);
+		 $pictures = Picture::find()->all();
+       
+		 if (! \Yii::$app->user->can('picture.delete.own', ['post' => $model])) {
+			   throw new ForbiddenHttpException('You do not own this picture!');
+		   }
+		 /*   
+		Image::frame(\Yii::$app->basePath .'/web/'.$model->image_link , 0, '666', 0)
+		->rotate(-90)
+		->save(\Yii::$app->basePath.'/web/'.$model->image_link , ['jpeg_quality' => 50]);
+		*/
+		
+		$image = Image::getImagine();
+			$newImage = $image->open(Yii::getAlias(\Yii::$app->basePath.'/web/'.$model->image_link));
+			 
+			$newImage->rotate(-90);
+			 
+			$newImage->save(Yii::getAlias(\Yii::$app->basePath.'/web/'.$model->image_link), ['quality' => 80]);
+		
+		 $searchModel = new PictureSearch();
+        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+		$model = Picture::find()->all();
+
+        return $this->render('index', [
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
+            'model' => $model,
+        ]);
+		
+		
+/*
+        return $this->redirect(['create', 
+				'model' => $model,
+				'pictures' => $pictures,
+				]);
+				*/
+    }
+	
+	
     /**
      * Finds the Picture model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.

@@ -30,7 +30,10 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'user_id',
-            'image_link:ntext',
+            [
+                'format' => ['image', ['width' => 100, 'height' => 100]],
+                'attribute' => 'imageLink',
+            ],
             'created_at',
             'updated_at',
         ],

@@ -3,6 +3,7 @@
 use yii\helpers\Html;
 use yii\grid\GridView;
 
+
 /* @var $this yii\web\View */
 /* @var $searchModel common\models\PictureSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
@@ -21,16 +22,46 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
         'filterModel' => $searchModel,
+		
+		
+		
         'columns' => [
+		
             ['class' => 'yii\grid\SerialColumn'],
 
             'id',
             'user_id',
-            'image_link:ntext',
-            'created_at',
-            'updated_at',
+             [
+                'format' => ['image', ['width' => 250, 'height' => 250]],
+                'attribute' => 'imageLink',
+            ],
+			
+			[ 
+                'attribute'=>'created_at',
+                'format' =>  ['date', 'php:Y-m-d H:i:s'],
+				'options' => ['width' => '200']
+            ],
+			[ 
+                'attribute'=>'updated_at',
+                'format' =>  ['date', 'php:Y-m-d H:i:s'],
+				'options' => ['width' => '200']
+            ],
+			
+			 [
+            'class' => 'yii\grid\ActionColumn',
+            'template' => '{view} {update} {delete} {rotate}',
+            'buttons' => [
+                'rotate' => function ($url,$model) {
+                    return Html::a(
+                    'rotate', 
+                    $url);
+                },
+               
+            ],
+			],
+         
 
-            ['class' => 'yii\grid\ActionColumn'],
+           
         ],
     ]); ?>
 </div>
