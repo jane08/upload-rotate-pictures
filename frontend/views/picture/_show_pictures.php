@@ -7,28 +7,10 @@ use yii\widgets\ActiveForm;
 /* @var $this yii\web\View */
 /* @var $model common\models\Picture */
 /* @var $form yii\widgets\ActiveForm */
-if($model->isNewRecord){
-	$action="create";
-}
-else{
-	$action="update";
-}
+
 ?>
 
-<div class="picture-form">
 
-      <?php $form = ActiveForm::begin(['options' => ['enctype' => 'multipart/form-data']]); ?>
-
-   
-		   <?= $form->field($model, 'uploadedImage')->fileInput(['accept' => 'image/*']) ?>
-
-   
-
-    <div class="form-group">
-        <?= Html::submitButton($model->isNewRecord ? 'Create' : 'Update', ['class' => $model->isNewRecord ? 'btn btn-success' : 'btn btn-primary']) ?>
-    </div>
-	
-<div class="ajax_rotate">	
 	 <table class="table">
 		
 		<tbody>
@@ -38,10 +20,11 @@ else{
 		  <tr>
 			<td><?php echo Html::img('@web/'.$picture->image_link, ["alt"=>"pic"]) ?></td>
 			<td> 
-				<span class="btn btn-primary rotate" data-picture =<?= $picture->id ?>>Rotate </span>
+			<?php // Html::a('Rotate', ['rotate', 'id' => $picture->id , 'action'=>$action], ['class' => 'btn btn-primary rotate','data-picture'=>$picture->id]) ?>
+			<span class="btn btn-primary rotate" data-picture =<?= $picture->id ?>>Rotate </span>
 			</td>
 			<td> 
-				<?= Html::a('Delete', ['delete', 'id' => $picture->id, 'action'=>$action], [
+				<?= Html::a('Delete', ['delete', 'id' => $picture->id], [
 				'class' => 'btn btn-danger',
 				'data' => [
 					'confirm' => 'Are you sure you want to delete this item?',
@@ -64,8 +47,3 @@ else{
 		 <?php endif; ?> 
 		</tbody>
 	</table>
-</div>	
-
-    <?php ActiveForm::end(); ?>
-
-</div>

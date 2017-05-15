@@ -159,7 +159,7 @@ class PictureController extends Controller
      * @param integer $id
      * @return mixed
      */
-    public function actionDelete($id)
+    public function actionDelete($id,$action=false)
     {
 		if (!Yii::$app->user->can('picture')) {
 			   throw new ForbiddenHttpException('You do not have permission to manage pictures! Please, register first.');
@@ -180,10 +180,14 @@ class PictureController extends Controller
 		    
 		$model->delete();
 
+		if($action=='create'){
+			 return $this->redirect(['create']);
+		}
+		
         return $this->redirect(['index']);
     }
 
-	 public function actionRotate($id,$action=false)
+	 public function actionRotate($id)
     {
 		if (!Yii::$app->user->can('picture')) {
 			   throw new ForbiddenHttpException('You do not have permission to manage pictures! Please, register first.');
@@ -209,19 +213,7 @@ class PictureController extends Controller
 		$model = Picture::find()->all();
 		 
 	
-		if($action=="create"){
-			return $this->redirect(['create', 
-				'model' => $model,
-				'pictures' => $pictures,
-				]);
-		}
-		else if($action=="update"){
-			$model = $this->findModel($id);
-			
-				 return $this->redirect(['update', 'id' => $model->id, 
-				 'model' => $model,
-				'pictures' => $pictures,]);
-		}
+		
 	
 			 return $this->redirect(['index', 
 					'searchModel' => $searchModel,
@@ -231,6 +223,32 @@ class PictureController extends Controller
 		 
 		
 			
+    }
+	
+	 public function actionAjaxRotate()
+    {
+		 if (Yii::$app->request->isAjax) {
+            $data = Yii::$app->request->post();
+            $picture_id= explode(":", $data['picture_id']);
+            $picture_id= $picture_id[0];
+			
+		
+			 $model = $this->findModel($picture_id);
+			$pictures = Picture::find()->all();
+			
+			$image = Image::getImagine();
+			$newImage = $image->open(Yii::getAlias(\Yii::$app->basePath.'/web/'.$model->image_link));
+			 
+			$newImage->rotate(-90);
+			 
+			$newImage->save(Yii::getAlias(\Yii::$app->basePath.'/web/'.$model->image_link), ['quality' => 80]);
+		
+			 return $this->renderAjax('_show_pictures', [
+                'model' => $model,
+				'pictures' => $pictures,
+
+            ]);
+		 }
     }
 	
 	
