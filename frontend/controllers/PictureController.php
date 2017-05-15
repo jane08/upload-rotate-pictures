@@ -195,11 +195,7 @@ class PictureController extends Controller
 		 if (! \Yii::$app->user->can('picture.delete.own', ['post' => $model])) {
 			   throw new ForbiddenHttpException('You do not own this picture!');
 		   }
-		 /*   
-		Image::frame(\Yii::$app->basePath .'/web/'.$model->image_link , 0, '666', 0)
-		->rotate(-90)
-		->save(\Yii::$app->basePath.'/web/'.$model->image_link , ['jpeg_quality' => 50]);
-		*/
+		
 		
 		$image = Image::getImagine();
 			$newImage = $image->open(Yii::getAlias(\Yii::$app->basePath.'/web/'.$model->image_link));
